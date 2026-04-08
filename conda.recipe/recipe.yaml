@@ -1,16 +1,16 @@
 context:
-  version: "5.5.4"
+  version: "5.6.0"
 
 recipe:
   name: imas-core
   version: ${{ version }}
 
 source:
-    git: https://github.com/munechika-koyo/IMAS-Core.git
-    branch: feature/meson
-    patches:
-      - patches/meson-python.patch
-      - patches/change-python-init.patch
+  git: https://github.com/munechika-koyo/IMAS-Core.git
+  branch: feature/meson
+  patches:
+    - patches/meson-python.patch
+    - patches/change-python-init.patch
 
 build:
   number: 0
