@@ -31,7 +31,7 @@ outputs:
         - ${{ compiler("cxx") }}
         - ${{ stdlib("c") }}
         - git
-        - meson <1.10
+        - meson
         - ninja
         - pkg-config
         - setuptools-scm
@@ -126,6 +126,7 @@ outputs:
         - al-core
         - pip
         - python
+        - setuptools-scm
         - meson-python
         - numpy
         - cython
