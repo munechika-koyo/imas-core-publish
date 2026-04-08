@@ -6,7 +6,7 @@ recipe:
   version: ${{ version }}
 
 source:
-    git: https://github.com/iterorganization/IMAS-Core.git
+    git: https://github.com/munechika-koyo/IMAS-Core.git
     branch: feature/meson
     patches:
       - patches/meson-python.patch
