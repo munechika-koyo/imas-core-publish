@@ -1,0 +1,53 @@
+name: Build/Publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target-platform: linux-64
+        #   - os: ubuntu-24.04-arm
+        #     target-platform: linux-aarch64
+          - os: windows-latest
+            target-platform: win-64
+          - os: macos-15-intel
+            target-platform: osx-64
+          - os: macos-latest
+            target-platform: osx-arm64
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build conda package
+        uses: prefix-dev/rattler-build-action@v0.2.36
+        with:
+          # needs to be unique for each matrix entry
+          artifact-name: package-${{ matrix.target-platform }}
+          build-args: --target-platform ${{ matrix.target-platform }}${{ matrix.target-platform == 'linux-aarch64' && ' --no-test' || '' }} --variant-config conda.recipe/variants.yaml
+
+  publish:
+    name: Publish package
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v6
+        with:
+          pattern: package-*
+          path: ${{ github.workspace }}/output
+          merge-multiple: true
+      - name: Upload all packages
+        shell: bash
+        run: |
+          shopt -s nullglob
+          EXIT_CODE=0
+          for pkg in $(find output -type f \( -name "*.conda" -o -name "*.tar.bz2" \) ); do
+            if ! rattler-build upload prefix -c imas-forge "${pkg}"; then
+              EXIT_CODE=1
+            fi
+          done
+          exit $EXIT_CODE
