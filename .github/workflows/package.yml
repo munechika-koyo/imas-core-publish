@@ -27,7 +27,7 @@ jobs:
         with:
           # needs to be unique for each matrix entry
           artifact-name: package-${{ matrix.target-platform }}
-          build-args: --target-platform ${{ matrix.target-platform }}${{ matrix.target-platform == 'linux-aarch64' && ' --no-test' || '' }} --variant-config conda.recipe/variants.yaml
+          build-args: --target-platform ${{ matrix.target-platform }}${{ matrix.target-platform == 'linux-aarch64' && ' --no-test' || '' }} --variant-config conda.recipe/variant.yaml
 
   publish:
     name: Publish package
