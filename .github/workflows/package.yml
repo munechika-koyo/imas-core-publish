@@ -41,6 +41,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Setup rattler-build
+        uses: prefix-dev/rattler-build-action@v0.2.36
+        with:
+          setup-only: true
       - name: Download artifacts
         uses: actions/download-artifact@v6
         with:
