@@ -13,7 +13,7 @@ source:
     - patches/change-python-init.patch
 
 build:
-  number: 0
+  number: 1
 
 outputs:
   # Core library
