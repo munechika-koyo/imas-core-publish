@@ -23,6 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ilammy/msvc-dev-cmd@v1
+      - name: Setup Link
+        if: matrix.target-platform == 'win-64'
+        shell: pwsh
+        run: |
+            $msvcLink = Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\*\VC\Tools\MSVC\*\bin\Hostx64\x64\link.exe" -Recurse | Select-Object -First 1
+            $env:LINK = $msvcLink.FullName
       - name: Build conda package
         uses: prefix-dev/rattler-build-action@v0.2.36
         with:
