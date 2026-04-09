@@ -16,23 +16,43 @@ jobs:
         include:
           - os: ubuntu-latest
             target-platform: linux-64
-        #   - os: ubuntu-24.04-arm
-        #     target-platform: linux-aarch64
-          # - os: windows-latest
-          #   target-platform: win-64
+          # - os: ubuntu-24.04-arm
+          #   target-platform: linux-aarch64
+          - os: windows-latest
+            target-platform: win-64
           - os: macos-15-intel
             target-platform: osx-64
           - os: macos-latest
             target-platform: osx-arm64
     steps:
       - uses: actions/checkout@v6
-      - uses: ilammy/msvc-dev-cmd@v1
-      - name: Setup Link
+      - name: Force MSVC linker
         if: matrix.target-platform == 'win-64'
         shell: pwsh
         run: |
-            $msvcLink = Get-ChildItem "C:\Program Files\Microsoft Visual Studio\2022\*\VC\Tools\MSVC\*\bin\Hostx64\x64\link.exe" -Recurse | Select-Object -First 1
-            $env:LINK = $msvcLink.FullName
+            $cl = (Get-Command cl.exe -ErrorAction Stop).Source
+            $msvcBin = Split-Path $cl -Parent
+            $msvcLink = Join-Path $msvcBin "link.exe"
+
+            if (!(Test-Path $msvcLink)) {
+              throw "MSVC link.exe not found: $msvcLink"
+            }
+
+            $msvcLib = Join-Path $msvcBin "lib.exe"
+
+            $msvcBin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            "CC=$cl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "CXX=$cl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "LINK=$msvcLink" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "LD=$msvcLink" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "AR=$msvcLib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+            Write-Host "Using cl.exe : $cl"
+            Write-Host "Using link.exe: $msvcLink"
+            Write-Host "Using lib.exe : $msvcLib"
+            where.exe cl
+            where.exe link
+            where.exe lib
       - name: Build conda package
         uses: prefix-dev/rattler-build-action@v0.2.36
         with:
