@@ -70,7 +70,7 @@ jobs:
         with:
           setup-only: true
       - name: Download artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           pattern: package-*
           path: ${{ github.workspace }}/output
